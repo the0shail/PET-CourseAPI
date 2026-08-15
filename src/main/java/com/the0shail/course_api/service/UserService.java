@@ -8,10 +8,12 @@ import com.the0shail.course_api.exception.TypeException;
 import com.the0shail.course_api.mapper.UserMapper;
 import com.the0shail.course_api.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UserService {
@@ -24,8 +26,11 @@ public class UserService {
         if (userRepository.existsUserByEmail(request.email()))
             throw new BadRequestException("Email уже занят", TypeException.EMAIL_ALREADY_TAKEN);
 
-        User response = userRepository.save(userMapper.toEntity(request));
+        User mappedUser = userMapper.toEntity(request);
 
-        return userMapper.toDto(response);
+        log.info("после маппинга {}", mappedUser);
+//        User response = userRepository.save(mappedUser);
+
+        return userMapper.toDto(mappedUser);
     }
 }

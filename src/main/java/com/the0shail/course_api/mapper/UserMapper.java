@@ -17,7 +17,9 @@ public interface UserMapper {
 
     UserDto toDto(User user);
 
-//    @Mapping(ignore = true)
-        // id генерит БД, из запроса не берём
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "role", constant = "STUDENT")
+    @Mapping(target = "profile", ignore = true)
+    @Mapping(target = "courses", ignore = true)
     User toEntity(CreateUserRequest request);
 }

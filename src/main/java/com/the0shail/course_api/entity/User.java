@@ -42,4 +42,17 @@ public class User {
         this.profile = profile;
         if (profile != null) profile.setUser(this);
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", role=" + role +
+                ", createdAt=" + createdAt +
+                ", profile=" + profile +
+                ", courses=" + courses +
+                '}';
+    }
 }
