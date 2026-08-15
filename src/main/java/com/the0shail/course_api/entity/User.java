@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.Instant;
 import java.util.List;
@@ -41,18 +42,5 @@ public class User {
     public void setProfile(UserProfile profile){
         this.profile = profile;
         if (profile != null) profile.setUser(this);
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", role=" + role +
-                ", createdAt=" + createdAt +
-                ", profile=" + profile +
-                ", courses=" + courses +
-                '}';
     }
 }
