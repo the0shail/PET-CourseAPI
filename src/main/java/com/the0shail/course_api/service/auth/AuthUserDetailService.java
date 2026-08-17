@@ -1,4 +1,4 @@
-package com.the0shail.course_api.service;
+package com.the0shail.course_api.service.auth;
 
 import com.the0shail.course_api.entity.User;
 import com.the0shail.course_api.repository.UserRepository;

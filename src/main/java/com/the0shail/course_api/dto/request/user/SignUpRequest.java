@@ -4,7 +4,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 
-public record CreateUserRequest(
+
+public record SignUpRequest(
         @NotBlank(message = "Email не должен быть пустым")
         @Email(message = "Некорректный формат email")
         String email,

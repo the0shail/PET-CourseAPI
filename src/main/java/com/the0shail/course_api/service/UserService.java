@@ -1,6 +1,6 @@
 package com.the0shail.course_api.service;
 
-import com.the0shail.course_api.dto.request.user.CreateUserRequest;
+import com.the0shail.course_api.dto.request.user.SignUpRequest;
 import com.the0shail.course_api.dto.response.user.UserDto;
 import com.the0shail.course_api.entity.User;
 import com.the0shail.course_api.entity.enumerate.Role;
@@ -23,7 +23,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public UserDto register(CreateUserRequest request){
+    public UserDto register(SignUpRequest request){
         if (userRepository.existsUserByEmail(request.email()))
             throw new BadRequestException("Email уже занят", TypeException.EMAIL_ALREADY_TAKEN);
 
@@ -39,4 +39,6 @@ public class UserService {
 
         return userMapper.toDto(saved);
     }
+
+
 }
