@@ -1,6 +1,8 @@
 package com.the0shail.course_api.config;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import com.the0shail.course_api.exception.entryPoint.JsonAccessDeniedHandler;
+import com.the0shail.course_api.exception.entryPoint.JsonAuthEntryPoint;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +32,7 @@ import java.nio.charset.StandardCharsets;
 public class AuthConfig {
 
     @Bean
-    SecurityFilterChain chain(HttpSecurity http) {
+    SecurityFilterChain chain(HttpSecurity http, JsonAuthEntryPoint entryPoint, JsonAccessDeniedHandler deniedHandler) {
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.authorizeHttpRequests(auth -> {
@@ -39,6 +41,15 @@ public class AuthConfig {
 
             auth.anyRequest().authenticated();
         });
+
+        http.oauth2ResourceServer(oauth2 -> oauth2
+                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter()))
+                .authenticationEntryPoint(entryPoint)
+                .accessDeniedHandler(deniedHandler));
+
+        http.exceptionHandling(ex -> ex
+                .authenticationEntryPoint(entryPoint)
+                .accessDeniedHandler(deniedHandler));
 
         return http.build();
     }
@@ -77,5 +88,7 @@ public class AuthConfig {
 
 
     @Bean
-    PasswordEncoder encoder() { return new BCryptPasswordEncoder(); }
+    PasswordEncoder encoder() {
+        return new BCryptPasswordEncoder();
+    }
 }

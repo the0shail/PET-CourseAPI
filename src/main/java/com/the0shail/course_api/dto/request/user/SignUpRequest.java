@@ -12,5 +12,11 @@ public record SignUpRequest(
 
         @NotBlank(message = "Пароль не должен быть пустым")
         @Length(min = 8, max = 64, message = "Пароль должен содержать от {min} до {max} символов")
-        String password
+        String password,
+
+        @NotBlank(message = "Фамилия не должна быть пустым")
+        String lastName,
+
+        @NotBlank(message = "Имя не должно быть пустым")
+        String firstName
 ) {}
