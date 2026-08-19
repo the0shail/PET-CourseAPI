@@ -1,11 +1,13 @@
 package com.the0shail.course_api.config;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import com.the0shail.course_api.entity.enumerate.Role;
 import com.the0shail.course_api.exception.entryPoint.JsonAccessDeniedHandler;
 import com.the0shail.course_api.exception.entryPoint.JsonAuthEntryPoint;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -36,8 +38,26 @@ public class AuthConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.authorizeHttpRequests(auth -> {
-            auth.requestMatchers("/error").permitAll();
-            auth.requestMatchers("/api/v1/auth/login", "/api/v1/auth/register").permitAll();
+            auth.requestMatchers("/error")
+                    .permitAll();
+
+            /* Auth routing */
+            auth.requestMatchers("/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/auth/refresh")
+                    .permitAll();
+            /* Auth routing */
+
+            /* Course routing */
+            auth.requestMatchers(HttpMethod.GET, "/api/v1/courses/my")
+                    .hasAnyAuthority(Role.INSTRUCTOR.name(), Role.ADMIN.name());
+            auth.requestMatchers(HttpMethod.GET, "/api/v1/courses", "/api/v1/courses/*")
+                    .authenticated();
+            auth.requestMatchers(HttpMethod.POST, "/api/v1/courses", "/api/v1/courses/*")
+                    .hasAnyAuthority(Role.INSTRUCTOR.name(), Role.ADMIN.name());
+            auth.requestMatchers(HttpMethod.PATCH, "/api/v1/courses/*")
+                    .hasAnyAuthority(Role.INSTRUCTOR.name(), Role.ADMIN.name());
+            auth.requestMatchers(HttpMethod.DELETE, "/api/v1/courses/*")
+                    .hasAnyAuthority(Role.INSTRUCTOR.name(), Role.ADMIN.name());
+            /* Course routing */
 
             auth.anyRequest().authenticated();
         });

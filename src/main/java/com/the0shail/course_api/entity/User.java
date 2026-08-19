@@ -48,6 +48,11 @@ public class User implements UserDetails {
         if (profile != null) profile.setUser(this);
     }
 
+    public void addCourse(Course course){
+        this.courses.add(course);
+        course.setAuthor(this);
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

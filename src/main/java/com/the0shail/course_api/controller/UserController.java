@@ -18,12 +18,12 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> get(@PathVariable("id") Long id){
-        return ResponseEntity.ok(userService.getById(id));
+        return ResponseEntity.ok(userService.findById(id));
     }
 
     @GetMapping("/me")
     public ResponseEntity<UserDto> me(Authentication authentication){
-        return ResponseEntity.ok(userService.getByEmail(authentication.getName()));
+        return ResponseEntity.ok(userService.findByEmail(authentication.getName()));
     }
 
     @PatchMapping("/me")

@@ -3,6 +3,7 @@ package com.the0shail.course_api.service;
 import com.the0shail.course_api.dto.request.user.SignUpRequest;
 import com.the0shail.course_api.dto.request.user.UpdateProfileRequest;
 import com.the0shail.course_api.dto.response.user.UserDto;
+import com.the0shail.course_api.entity.Course;
 import com.the0shail.course_api.entity.User;
 import com.the0shail.course_api.entity.UserProfile;
 import com.the0shail.course_api.entity.enumerate.Role;
@@ -49,12 +50,12 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserDto getById(Long id) {
+    public UserDto findById(Long id) {
         return userMapper.toDto(userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь не найден", TypeException.NOT_FOUND)));
     }
 
     @Transactional(readOnly = true)
-    public UserDto getByEmail(String email){
+    public UserDto findByEmail(String email){
         return userMapper.toDto(userRepository.findUserByEmail(email).orElseThrow(() -> new NotFoundException("Пользователь не найден", TypeException.NOT_FOUND)));
     }
 
@@ -74,5 +75,17 @@ public class UserService {
         log.info("Стал пользователь first_name={}, last_name={}, bio={}", userProfile.getFirstName(), userProfile.getLastName(), userProfile.getBio());
 
         return null;
+    }
+
+    @Transactional(readOnly = true)
+    public User getById(String email) {
+        return userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден", TypeException.NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public User getByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден", TypeException.NOT_FOUND));
     }
 }

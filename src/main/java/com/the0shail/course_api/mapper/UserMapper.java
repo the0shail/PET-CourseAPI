@@ -14,7 +14,6 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface UserMapper {
-
     UserDto toDto(User user);
 
     @Mapping(target = "id", ignore = true)

@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -41,9 +43,12 @@ public class Course {
     private PublicationStatus status = PublicationStatus.DRAFT;
 
     @Column(name = "created_at", nullable = false, updatable = false)
+    @CreationTimestamp
+
     private Instant createdAt = Instant.now();
 
     @Column(name = "updated_at", nullable = false)
+    @UpdateTimestamp
     private Instant updatedAt = Instant.now();
 
     @ManyToMany(fetch = FetchType.LAZY)
