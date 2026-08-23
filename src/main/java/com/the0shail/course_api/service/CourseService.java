@@ -2,22 +2,20 @@ package com.the0shail.course_api.service;
 
 import com.the0shail.course_api.dto.request.course.CreateCourseRequest;
 import com.the0shail.course_api.dto.request.course.UpdateCourseRequest;
-import com.the0shail.course_api.dto.response.course.CourseDto;
+import com.the0shail.course_api.dto.response.course.CourseDetailsResponse;
+import com.the0shail.course_api.dto.response.course.CourseSummaryResponse;
 import com.the0shail.course_api.entity.Course;
 import com.the0shail.course_api.entity.User;
 import com.the0shail.course_api.entity.enumerate.PublicationStatus;
 import com.the0shail.course_api.exception.TypeException;
-import com.the0shail.course_api.exception.exception.BadRequestException;
 import com.the0shail.course_api.exception.exception.NotFoundException;
 import com.the0shail.course_api.mapper.CourseMapper;
 import com.the0shail.course_api.repository.CourseRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.List;
 
 @Slf4j
@@ -29,18 +27,18 @@ public class CourseService {
     private final UserService userService;
 
     @Transactional(readOnly = true)
-    public List<CourseDto> list(){
+    public List<CourseSummaryResponse> list(){
         return courseRepository.findAll().stream().map(courseMapper::toDto).toList();
     }
 
     @Transactional(readOnly = true)
-    public CourseDto findById(Long id){
+    public CourseDetailsResponse findById(Long id){
         Course course = courseRepository.findById(id).orElseThrow(() -> new NotFoundException("Курс не найден", TypeException.NOT_FOUND));
 
-        return courseMapper.toDto(course);
+        return courseMapper.toDetailsDto(course);
     }
 
-    public List<CourseDto> findByAuthorId(String email){
+    public List<CourseSummaryResponse> findByAuthorId(String email){
         User owner = userService.getByEmail(email);
 
         return courseRepository.findCoursesByAuthorId(owner.getId()).stream().map(courseMapper::toDto).toList();
@@ -52,24 +50,19 @@ public class CourseService {
     }
 
     @Transactional
-    public CourseDto create(CreateCourseRequest request, String email){
+    public CourseSummaryResponse create(CreateCourseRequest request, String email){
         User me = userService.getByEmail(email);
 
-        Course course = new Course();
+        Course course = courseMapper.toEntity(request);
+        course.setAuthor(me);
 
-        me.addCourse(course);
-        course.setTitle(request.title());
-        course.setDescription(request.description());
-        course.setPrice(request.price());
-        course.setStatus(PublicationStatus.DRAFT);
+        Course saved = courseRepository.save(course);
 
-        courseRepository.save(course);
-
-        return courseMapper.toDto(course);
+        return courseMapper.toDto(saved);
     }
 
     @Transactional
-    public CourseDto update(Long id, UpdateCourseRequest request, String email) {
+    public CourseSummaryResponse update(Long id, UpdateCourseRequest request, String email) {
         User user = userService.getByEmail(email);
         Course course = getById(id);
 
@@ -82,7 +75,7 @@ public class CourseService {
     }
 
     @Transactional
-    public CourseDto archived(Long id, String email){
+    public CourseSummaryResponse archived(Long id, String email){
         User user = userService.getByEmail(email);
         Course course = getById(id);
 
@@ -95,7 +88,7 @@ public class CourseService {
     }
 
     @Transactional
-    public CourseDto published(Long id, String email){
+    public CourseSummaryResponse published(Long id, String email){
         User user = userService.getByEmail(email);
         Course course = getById(id);
 

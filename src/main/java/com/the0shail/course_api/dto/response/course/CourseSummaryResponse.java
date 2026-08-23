@@ -1,15 +1,17 @@
 package com.the0shail.course_api.dto.response.course;
 
-import com.the0shail.course_api.dto.response.user.UserDto;
+import com.the0shail.course_api.dto.response.user.AuthorSummaryDto;
 import com.the0shail.course_api.entity.enumerate.PublicationStatus;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
-public record CourseDto (
+public record CourseSummaryResponse (
         Long id,
-        UserDto author,
+        AuthorSummaryDto author,
         String title,
         String description,
         BigDecimal price,
-        PublicationStatus status
+        PublicationStatus status,
+        Instant createdAt
 ){}

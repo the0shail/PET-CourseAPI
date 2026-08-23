@@ -38,38 +38,28 @@ public class AuthConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.authorizeHttpRequests(auth -> {
-            auth.requestMatchers("/error")
-                    .permitAll();
+            auth.requestMatchers("/error").permitAll();
+
+            auth.requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll();
 
             /* Auth routing */
-            auth.requestMatchers("/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/auth/refresh")
-                    .permitAll();
+            auth.requestMatchers("/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/auth/refresh").permitAll();
             /* Auth routing */
 
             /* Course routing */
-            auth.requestMatchers(HttpMethod.GET, "/api/v1/courses/my")
-                    .hasAnyAuthority(Role.INSTRUCTOR.name(), Role.ADMIN.name());
-            auth.requestMatchers(HttpMethod.GET, "/api/v1/courses", "/api/v1/courses/*")
-                    .authenticated();
-            auth.requestMatchers(HttpMethod.POST, "/api/v1/courses", "/api/v1/courses/*")
-                    .hasAnyAuthority(Role.INSTRUCTOR.name(), Role.ADMIN.name());
-            auth.requestMatchers(HttpMethod.PATCH, "/api/v1/courses/*")
-                    .hasAnyAuthority(Role.INSTRUCTOR.name(), Role.ADMIN.name());
-            auth.requestMatchers(HttpMethod.DELETE, "/api/v1/courses/*")
-                    .hasAnyAuthority(Role.INSTRUCTOR.name(), Role.ADMIN.name());
+            auth.requestMatchers(HttpMethod.GET, "/api/v1/courses/my").hasAnyAuthority(Role.INSTRUCTOR.name(), Role.ADMIN.name());
+            auth.requestMatchers(HttpMethod.GET, "/api/v1/courses", "/api/v1/courses/*").authenticated();
+            auth.requestMatchers(HttpMethod.POST, "/api/v1/courses", "/api/v1/courses/*").hasAnyAuthority(Role.INSTRUCTOR.name(), Role.ADMIN.name());
+            auth.requestMatchers(HttpMethod.PATCH, "/api/v1/courses/*").hasAnyAuthority(Role.INSTRUCTOR.name(), Role.ADMIN.name());
+            auth.requestMatchers(HttpMethod.DELETE, "/api/v1/courses/*").hasAnyAuthority(Role.INSTRUCTOR.name(), Role.ADMIN.name());
             /* Course routing */
 
             auth.anyRequest().authenticated();
         });
 
-        http.oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter()))
-                .authenticationEntryPoint(entryPoint)
-                .accessDeniedHandler(deniedHandler));
+        http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter())).authenticationEntryPoint(entryPoint).accessDeniedHandler(deniedHandler));
 
-        http.exceptionHandling(ex -> ex
-                .authenticationEntryPoint(entryPoint)
-                .accessDeniedHandler(deniedHandler));
+        http.exceptionHandling(ex -> ex.authenticationEntryPoint(entryPoint).accessDeniedHandler(deniedHandler));
 
         return http.build();
     }
