@@ -2,12 +2,9 @@ package com.the0shail.course_api.controller;
 
 import com.the0shail.course_api.dto.request.course.CreateCourseRequest;
 import com.the0shail.course_api.dto.request.course.UpdateCourseRequest;
-import com.the0shail.course_api.dto.request.module.CreateModuleRequest;
 import com.the0shail.course_api.dto.response.course.CourseDetailsResponse;
 import com.the0shail.course_api.dto.response.course.CourseSummaryResponse;
-import com.the0shail.course_api.dto.response.module.ModuleSummaryDto;
 import com.the0shail.course_api.service.CourseService;
-import com.the0shail.course_api.service.ModuleService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,52 +18,48 @@ import java.util.List;
 @AllArgsConstructor
 public class CourseController {
     private final CourseService courseService;
-    private final ModuleService moduleService;
 
-    @GetMapping
+    @GetMapping("/courses")
     public ResponseEntity<?> index() {
         return ResponseEntity.status(200).body(courseService.list());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/courses/{id}")
     public ResponseEntity<CourseDetailsResponse> get(@PathVariable Long id) {
         return ResponseEntity.status(200).body(courseService.findById(id));
     }
 
-    @PostMapping
+    @PostMapping("/courses")
     public ResponseEntity<CourseSummaryResponse> create(@RequestBody @Valid CreateCourseRequest request, Authentication auth) {
         return ResponseEntity.status(201).body(courseService.create(request, auth.getName()));
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/courses/{id}")
     public ResponseEntity<CourseSummaryResponse> update(@PathVariable Long id, @RequestBody @Valid UpdateCourseRequest request, Authentication authentication) {
         return ResponseEntity.status(200).body(courseService.update(id, request, authentication.getName()));
     }
 
-    @PostMapping("/{id}/publish")
+    @PostMapping("/courses/{id}/publish")
     public ResponseEntity<CourseSummaryResponse> publish(@PathVariable Long id, Authentication authentication) {
         return ResponseEntity.status(200).body(courseService.published(id, authentication.getName()));
     }
 
-    @PostMapping("/{id}/archive")
+    @PostMapping("/courses/{id}/archive")
     public ResponseEntity<CourseSummaryResponse> archive(@PathVariable Long id, Authentication authentication) {
         return ResponseEntity.status(200).body(courseService.archived(id, authentication.getName()));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable Long id, Authentication authentication) {
+    @DeleteMapping("/courses/{id}")
+    public ResponseEntity<Object> delete(@PathVariable Long id, Authentication authentication) {
         courseService.delete(id, authentication.getName());
 
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/my")
+    @GetMapping("/courses/my")
     public ResponseEntity<List<CourseSummaryResponse>> courses(Authentication authentication) {
         return ResponseEntity.status(200).body(courseService.findByAuthorId(authentication.getName()));
     }
 
-    @PostMapping("/{id}/modules")
-    public ResponseEntity<ModuleSummaryDto> createModule(@PathVariable Long id, @RequestBody @Valid CreateModuleRequest request, Authentication authentication){
-        return ResponseEntity.status(201).body(moduleService.create(id, request, authentication.getName()));
-    }
+
 }

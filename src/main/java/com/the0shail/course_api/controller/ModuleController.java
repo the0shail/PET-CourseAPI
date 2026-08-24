@@ -1,10 +1,8 @@
 package com.the0shail.course_api.controller;
 
-import com.the0shail.course_api.dto.request.lesson.CreateLessonRequest;
+import com.the0shail.course_api.dto.request.module.CreateModuleRequest;
 import com.the0shail.course_api.dto.request.module.UpdateModuleRequest;
-import com.the0shail.course_api.dto.response.lesson.LessonSummaryDto;
 import com.the0shail.course_api.dto.response.module.ModuleSummaryDto;
-import com.the0shail.course_api.service.LessonService;
 import com.the0shail.course_api.service.ModuleService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -12,26 +10,39 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/v1/modules")
+@RequestMapping("/api/v1")
 @AllArgsConstructor
 public class ModuleController {
     private final ModuleService moduleService;
-    private final LessonService lessonService;
 
-    @PatchMapping("/{id}")
+    @GetMapping("/modules/{id}")
+    public ResponseEntity<ModuleSummaryDto> get(@PathVariable Long id){
+        return ResponseEntity.ok().body(moduleService.findById(id));
+    }
+
+    @PatchMapping("/modules/{id}")
     public ResponseEntity<ModuleSummaryDto> update(@PathVariable Long id, @RequestBody @Valid UpdateModuleRequest request, Authentication authentication){
         return ResponseEntity.status(200).body(moduleService.update(id, request, authentication.getName()));
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id){
+    @DeleteMapping("/modules/{id}")
+    public ResponseEntity<Object> delete(@PathVariable Long id, Authentication authentication){
+        moduleService.delete(id, authentication.getName());
 
+        return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/lessons")
-    public ResponseEntity<LessonSummaryDto> lessons(@PathVariable("id") Long moduleId, @RequestBody @Valid CreateLessonRequest request, Authentication authentication){
-        return ResponseEntity.status(201).body(lessonService.create(moduleId, request, authentication.getName()));
+    @GetMapping("/courses/{courseId}/modules")
+    public ResponseEntity<List<ModuleSummaryDto>> list(@PathVariable Long courseId){
+        return ResponseEntity.ok().body(moduleService.list(courseId));
+    }
+
+    @PostMapping("/courses/{courseId}/modules")
+    public ResponseEntity<ModuleSummaryDto> createModule(@PathVariable Long courseId, @RequestBody @Valid CreateModuleRequest request, Authentication authentication){
+        return ResponseEntity.status(201).body(moduleService.create(courseId, request, authentication.getName()));
     }
 
 
