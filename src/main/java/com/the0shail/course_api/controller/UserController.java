@@ -2,6 +2,7 @@ package com.the0shail.course_api.controller;
 
 import com.the0shail.course_api.dto.request.user.UpdateProfileRequest;
 import com.the0shail.course_api.dto.response.user.UserDetailsDto;
+import com.the0shail.course_api.dto.response.user.UserPublicDto;
 import com.the0shail.course_api.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDetailsDto> get(@PathVariable Long id){
+    public ResponseEntity<UserPublicDto> get(@PathVariable Long id){
         return ResponseEntity.ok(userService.findById(id));
     }
 

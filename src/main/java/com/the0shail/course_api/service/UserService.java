@@ -3,14 +3,17 @@ package com.the0shail.course_api.service;
 import com.the0shail.course_api.dto.request.user.SignUpRequest;
 import com.the0shail.course_api.dto.request.user.UpdateProfileRequest;
 import com.the0shail.course_api.dto.response.user.UserDetailsDto;
+import com.the0shail.course_api.dto.response.user.UserPublicDto;
 import com.the0shail.course_api.entity.User;
 import com.the0shail.course_api.entity.UserProfile;
+import com.the0shail.course_api.entity.enumerate.PublicationStatus;
 import com.the0shail.course_api.entity.enumerate.Role;
 import com.the0shail.course_api.exception.TypeException;
 import com.the0shail.course_api.exception.exception.BadRequestException;
 import com.the0shail.course_api.exception.exception.NotFoundException;
 import com.the0shail.course_api.mapper.UserMapper;
 import com.the0shail.course_api.mapper.UserProfileMapper;
+import com.the0shail.course_api.repository.CourseRepository;
 import com.the0shail.course_api.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final CourseRepository courseRepository;
     private final UserMapper userMapper;
     private final UserProfileMapper userProfileMapper;
     private final PasswordEncoder passwordEncoder;
@@ -51,8 +55,9 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserDetailsDto findById(Long id) {
-        return userMapper.toDto(userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь не найден", TypeException.NOT_FOUND)));
+    public UserPublicDto findById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь не найден", TypeException.NOT_FOUND));
+        return userMapper.toPublicDto(user, courseRepository.countByAuthorIdAndStatus(user.getId(), PublicationStatus.PUBLISHED));
     }
 
     @Transactional(readOnly = true)
