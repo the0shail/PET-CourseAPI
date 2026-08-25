@@ -1,6 +1,8 @@
 package com.the0shail.course_api.exception;
 
+import com.the0shail.course_api.dto.response.util.ErrorResponse;
 import com.the0shail.course_api.exception.exception.BadRequestException;
+import com.the0shail.course_api.exception.exception.ForbiddenException;
 import com.the0shail.course_api.exception.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -58,6 +60,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(
                 Instant.now(),
                 HttpStatus.NOT_FOUND.value(),
+                e.getType().name(),
+                e.getMessage(),
+                req.getRequestURI()
+        ));
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handlerForbidden(ForbiddenException e,  HttpServletRequest req){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(
+                Instant.now(),
+                HttpStatus.FORBIDDEN.value(),
                 e.getType().name(),
                 e.getMessage(),
                 req.getRequestURI()

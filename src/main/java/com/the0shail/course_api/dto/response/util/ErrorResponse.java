@@ -1,4 +1,4 @@
-package com.the0shail.course_api.exception;
+package com.the0shail.course_api.dto.response.util;
 
 import java.time.Instant;
 

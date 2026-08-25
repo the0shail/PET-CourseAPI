@@ -1,6 +1,6 @@
 package com.the0shail.course_api.exception.entryPoint;
 
-import com.the0shail.course_api.exception.ErrorResponse;
+import com.the0shail.course_api.dto.response.util.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

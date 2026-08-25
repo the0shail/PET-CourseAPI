@@ -15,5 +15,8 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     Long countByAuthorIdAndStatus(Long authorId, PublicationStatus status);
 
+    Long countByCategoriesIdAndStatus(Long categoryId, PublicationStatus status);
+
+
     Page<Course> findAll(Pageable pageable);
 }
