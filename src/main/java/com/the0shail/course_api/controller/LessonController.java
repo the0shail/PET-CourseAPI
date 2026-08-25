@@ -1,7 +1,7 @@
 package com.the0shail.course_api.controller;
 
 import com.the0shail.course_api.dto.request.lesson.CreateLessonRequest;
-import com.the0shail.course_api.dto.response.lesson.LessonSummaryDto;
+import com.the0shail.course_api.dto.response.lesson.LessonDetailDto;
 import com.the0shail.course_api.service.LessonService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -36,7 +36,7 @@ public class LessonController {
     }
 
     @PostMapping("/modules/{moduleId}/lessons")
-    public ResponseEntity<LessonSummaryDto> lessons(@PathVariable Long moduleId, @RequestBody @Valid CreateLessonRequest request, Authentication authentication){
+    public ResponseEntity<LessonDetailDto> lessons(@PathVariable Long moduleId, @RequestBody @Valid CreateLessonRequest request, Authentication authentication){
         return ResponseEntity.status(201).body(lessonService.create(moduleId, request, authentication.getName()));
     }
 }

@@ -1,6 +1,6 @@
 package com.the0shail.course_api.dto.response.user;
 
-public record AuthorSummaryDto(
+public record UserBriefDto(
         Long id,
         String firstName,
         String lastName,

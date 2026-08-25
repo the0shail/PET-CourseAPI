@@ -2,7 +2,7 @@ package com.the0shail.course_api.mapper;
 
 import com.the0shail.course_api.dto.request.module.CreateModuleRequest;
 import com.the0shail.course_api.dto.request.module.UpdateModuleRequest;
-import com.the0shail.course_api.dto.response.module.ModuleSummaryDto;
+import com.the0shail.course_api.dto.response.module.ModuleDto;
 import com.the0shail.course_api.entity.Module;
 import org.mapstruct.*;
 
@@ -12,7 +12,8 @@ import org.mapstruct.*;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface ModuleMapper {
-    ModuleSummaryDto toDto(Module module);
+    @Mapping(target = "courseId", source = "module.course.id")
+    ModuleDto toDto(Module module);
 
     @Mapping(target = "id",      ignore = true)
     @Mapping(target = "course",  ignore = true)   // ставит сервис

@@ -2,7 +2,7 @@ package com.the0shail.course_api.service.auth;
 
 import com.the0shail.course_api.dto.request.auth.RefreshRequest;
 import com.the0shail.course_api.dto.request.user.SignInRequest;
-import com.the0shail.course_api.dto.response.auth.JwtAuthenticationResponse;
+import com.the0shail.course_api.dto.response.auth.AuthTokens;
 import com.the0shail.course_api.entity.User;
 import com.the0shail.course_api.service.UserService;
 import jakarta.transaction.Transactional;
@@ -37,13 +37,13 @@ public class JwtService {
     private long ttlMinutes;
 
     @Transactional
-    public JwtAuthenticationResponse login(SignInRequest request) {
+    public AuthTokens login(SignInRequest request) {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password()));
 
         User user = userService.getByEmail(auth.getName());
 
-        return new JwtAuthenticationResponse(
+        return new AuthTokens(
                 generateAccessToken(user.getEmail(), auth.getAuthorities()),
                 refreshTokenService.issue(user),
                 "Bearer",
@@ -52,13 +52,13 @@ public class JwtService {
     }
 
     @Transactional
-    public JwtAuthenticationResponse refresh(RefreshRequest request) {
+    public AuthTokens refresh(RefreshRequest request) {
         User user = refreshTokenService.validateAndRotate(request.refreshToken());
 
         List<GrantedAuthority> authorities =
                 List.of(new SimpleGrantedAuthority(user.getRole().name()));
 
-        return new JwtAuthenticationResponse(
+        return new AuthTokens(
                 generateAccessToken(user.getEmail(), authorities),
                 refreshTokenService.issue(user),
                 "Bearer",

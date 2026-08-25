@@ -2,7 +2,7 @@ package com.the0shail.course_api.service;
 
 import com.the0shail.course_api.dto.request.module.CreateModuleRequest;
 import com.the0shail.course_api.dto.request.module.UpdateModuleRequest;
-import com.the0shail.course_api.dto.response.module.ModuleSummaryDto;
+import com.the0shail.course_api.dto.response.module.ModuleDto;
 import com.the0shail.course_api.entity.Course;
 import com.the0shail.course_api.entity.Module;
 import com.the0shail.course_api.entity.User;
@@ -30,19 +30,19 @@ public class ModuleService {
     private final ModuleMapper moduleMapper;
 
     @Transactional(readOnly = true)
-    public List<ModuleSummaryDto> list(Long courseId){
+    public List<ModuleDto> list(Long courseId){
         return moduleRepository.findByCourse_Id(courseId).stream().map(moduleMapper::toDto).toList();
     }
 
     @Transactional(readOnly = true)
-    public ModuleSummaryDto findById(Long id) {
+    public ModuleDto findById(Long id) {
         return moduleMapper.toDto(moduleRepository
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("Курс не найден", TypeException.NOT_FOUND)));
     }
 
     @Transactional
-    public ModuleSummaryDto create(Long courseId, CreateModuleRequest request, String email) {
+    public ModuleDto create(Long courseId, CreateModuleRequest request, String email) {
         Course course = courseService.getById(courseId);
         User me = userService.getByEmail(email);
 
@@ -58,7 +58,7 @@ public class ModuleService {
     }
 
     @Transactional
-    public ModuleSummaryDto update(Long id, UpdateModuleRequest request, String email) {
+    public ModuleDto update(Long id, UpdateModuleRequest request, String email) {
         Module module = getById(id);
         User me = userService.getByEmail(email);
 

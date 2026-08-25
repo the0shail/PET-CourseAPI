@@ -1,7 +1,7 @@
 package com.the0shail.course_api.service;
 
 import com.the0shail.course_api.dto.request.lesson.CreateLessonRequest;
-import com.the0shail.course_api.dto.response.lesson.LessonSummaryDto;
+import com.the0shail.course_api.dto.response.lesson.LessonDetailDto;
 import com.the0shail.course_api.entity.Lesson;
 import com.the0shail.course_api.entity.Module;
 import com.the0shail.course_api.entity.User;
@@ -24,7 +24,7 @@ public class LessonService {
     private final LessonMapper lessonMapper;
 
     @Transactional
-    public LessonSummaryDto create(Long moduleId, CreateLessonRequest request, String email){
+    public LessonDetailDto create(Long moduleId, CreateLessonRequest request, String email){
         Module module = moduleService.getById(moduleId);
         User user = userService.getByEmail(email);
 
@@ -36,6 +36,6 @@ public class LessonService {
 
         Lesson saved = lessonRepository.save(lesson);
 
-        return lessonMapper.toDto(saved);
+        return lessonMapper.toDetailDto(saved);
     }
 }

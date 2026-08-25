@@ -2,7 +2,7 @@ package com.the0shail.course_api.service;
 
 import com.the0shail.course_api.dto.request.user.SignUpRequest;
 import com.the0shail.course_api.dto.request.user.UpdateProfileRequest;
-import com.the0shail.course_api.dto.response.user.UserDetailsDto;
+import com.the0shail.course_api.dto.response.user.UserPrivateDto;
 import com.the0shail.course_api.dto.response.user.UserPublicDto;
 import com.the0shail.course_api.entity.User;
 import com.the0shail.course_api.entity.UserProfile;
@@ -32,7 +32,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public UserDetailsDto register(SignUpRequest request) {
+    public UserPrivateDto register(SignUpRequest request) {
         if (userRepository.existsUserByEmail(request.email()))
             throw new BadRequestException("Email уже занят", TypeException.EMAIL_ALREADY_TAKEN);
 
@@ -51,7 +51,7 @@ public class UserService {
 
         log.info("зарегистрирован пользователь id={}, email={}, password={}", saved.getId(), saved.getEmail(), saved.getPassword());
 
-        return userMapper.toDto(saved);
+        return userMapper.toPrivateDto(saved);
     }
 
     @Transactional(readOnly = true)
@@ -61,12 +61,12 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserDetailsDto findByEmail(String email){
-        return userMapper.toDto(userRepository.findUserByEmail(email).orElseThrow(() -> new NotFoundException("Пользователь не найден", TypeException.NOT_FOUND)));
+    public UserPrivateDto findByEmail(String email){
+        return userMapper.toPrivateDto(userRepository.findUserByEmail(email).orElseThrow(() -> new NotFoundException("Пользователь не найден", TypeException.NOT_FOUND)));
     }
 
     @Transactional
-    public UserDetailsDto updateProfile(UpdateProfileRequest request, String email) {
+    public UserPrivateDto updateProfile(UpdateProfileRequest request, String email) {
         User user = userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден", TypeException.NOT_FOUND));
 
@@ -79,7 +79,7 @@ public class UserService {
 
         userProfileMapper.updateProfile(request, profile);
 
-        return userMapper.toDto(user);
+        return userMapper.toPrivateDto(user);
     }
 
     @Transactional(readOnly = true)

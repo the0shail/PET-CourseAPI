@@ -2,8 +2,10 @@ package com.the0shail.course_api.service;
 
 import com.the0shail.course_api.dto.request.course.CreateCourseRequest;
 import com.the0shail.course_api.dto.request.course.UpdateCourseRequest;
-import com.the0shail.course_api.dto.response.course.CourseDetailsResponse;
-import com.the0shail.course_api.dto.response.course.CourseSummaryResponse;
+import com.the0shail.course_api.dto.response.course.CourseDetailDto;
+import com.the0shail.course_api.dto.response.course.CourseListItemDto;
+import com.the0shail.course_api.dto.response.course.CourseMineDto;
+import com.the0shail.course_api.dto.response.util.Page;
 import com.the0shail.course_api.entity.Course;
 import com.the0shail.course_api.entity.User;
 import com.the0shail.course_api.entity.enumerate.PublicationStatus;
@@ -13,6 +15,7 @@ import com.the0shail.course_api.mapper.CourseMapper;
 import com.the0shail.course_api.repository.CourseRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,21 +30,21 @@ public class CourseService {
     private final UserService userService;
 
     @Transactional(readOnly = true)
-    public List<CourseSummaryResponse> list(){
-        return courseRepository.findAll().stream().map(courseMapper::toDto).toList();
+    public Page<CourseListItemDto> list(Pageable pageable) {
+        return Page.from(courseRepository.findAll(pageable).map(courseMapper::toListItemDto));
     }
 
     @Transactional(readOnly = true)
-    public CourseDetailsResponse findById(Long id){
+    public CourseDetailDto findById(Long id){
         Course course = courseRepository.findById(id).orElseThrow(() -> new NotFoundException("Курс не найден", TypeException.NOT_FOUND));
 
         return courseMapper.toDetailsDto(course);
     }
 
-    public List<CourseSummaryResponse> findByAuthorId(String email){
+    public Page<CourseMineDto> findByAuthorId(Pageable pageable, String email){
         User owner = userService.getByEmail(email);
 
-        return courseRepository.findCoursesByAuthorId(owner.getId()).stream().map(courseMapper::toDto).toList();
+        return Page.from(courseRepository.findCoursesByAuthorId(owner.getId(), pageable).map(courseMapper::toMineDto));
     }
 
     @Transactional(readOnly = true)
@@ -50,7 +53,7 @@ public class CourseService {
     }
 
     @Transactional
-    public CourseSummaryResponse create(CreateCourseRequest request, String email){
+    public CourseDetailDto create(CreateCourseRequest request, String email){
         User me = userService.getByEmail(email);
 
         Course course = courseMapper.toEntity(request);
@@ -58,11 +61,11 @@ public class CourseService {
 
         Course saved = courseRepository.save(course);
 
-        return courseMapper.toDto(saved);
+        return courseMapper.toDetailsDto(saved);
     }
 
     @Transactional
-    public CourseSummaryResponse update(Long id, UpdateCourseRequest request, String email) {
+    public CourseDetailDto update(Long id, UpdateCourseRequest request, String email) {
         User user = userService.getByEmail(email);
         Course course = getById(id);
 
@@ -71,11 +74,11 @@ public class CourseService {
 
         courseMapper.updateCourse(request, course);
 
-        return courseMapper.toDto(course);
+        return courseMapper.toDetailsDto(course);
     }
 
     @Transactional
-    public CourseSummaryResponse archived(Long id, String email){
+    public CourseDetailDto archived(Long id, String email){
         User user = userService.getByEmail(email);
         Course course = getById(id);
 
@@ -84,11 +87,11 @@ public class CourseService {
 
         course.setStatus(PublicationStatus.ARCHIVED);
 
-        return courseMapper.toDto(course);
+        return courseMapper.toDetailsDto(course);
     }
 
     @Transactional
-    public CourseSummaryResponse published(Long id, String email){
+    public CourseDetailDto published(Long id, String email){
         User user = userService.getByEmail(email);
         Course course = getById(id);
 
@@ -97,7 +100,7 @@ public class CourseService {
 
         course.setStatus(PublicationStatus.PUBLISHED);
 
-        return courseMapper.toDto(course);
+        return courseMapper.toDetailsDto(course);
     }
 
     @Transactional
